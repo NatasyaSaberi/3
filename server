@@ -1,0 +1,41 @@
+import socket
+
+def bar_to_atmosphere(pressure_bar):
+    # 1 bar is approximately equal to 0.986923 atm
+    return pressure_bar * 0.986923
+
+def main():
+    # Create a TCP socket
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Bind the socket to a specific address and port
+    host = '192.168.142.131'  # localhost
+    port = 12345
+    server_socket.bind((host, port))
+
+    # Listen for incoming connections
+    server_socket.listen(1)
+    print("Pressure Conversion Server is listening on {}:{}".format(host, port))
+
+    while True:
+        # Accept incoming connection
+        client_socket, client_addr = server_socket.accept()
+        print("Connection from:", client_addr)
+
+        # Receive data from the client
+        data = client_socket.recv(1024).decode()
+        try:
+            pressure_bar = float(data)
+            atmosphere_standard = bar_to_atmosphere(pressure_bar)
+            response = f"Atmosphere Standard: {atmosphere_standard:.4f} atm"
+        except ValueError:
+            response = "Error: Invalid input. Please provide a valid pressure value in bar."
+
+        # Send the response back to the client
+        client_socket.sendall(response.encode())
+
+        # Close the client socket
+        client_socket.close()
+
+if __name__ == "__main__":
+    main()
