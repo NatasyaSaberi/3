@@ -1,0 +1,29 @@
+import socket
+
+def main():
+    # Create a TCP socket
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Connect to the server
+    host = '192.168.142.131'  # localhost
+    port = 12345
+    client_socket.connect((host, port))
+
+    # Get user input for pressure in bar
+    pressure_bar = input("Enter pressure in bar: ")
+
+    try:
+        # Send data to the server
+        client_socket.sendall(pressure_bar.encode())
+
+        # Receive the response from the server
+        response = client_socket.recv(1024).decode()
+        print("Received response from the Pressure Conversion Server:", response)
+    except Exception as e:
+        print("Error:", str(e))
+
+    # Close the socket
+    client_socket.close()
+
+if __name__ == "__main__":
+    main()
